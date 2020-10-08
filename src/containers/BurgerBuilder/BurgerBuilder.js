@@ -23,14 +23,19 @@ class BurgerBuilder extends Component {
         totalPrice: 4,
         purchaseable: false,
         purchasing: false,
-        loading: false
+        loading: false,
+        error: false
     }
     
     componentDidMount () {
         axios.get('https://react-my-burger-5727e.firebaseio.com/ingredients.json')
             .then( response => {
+                this.updatePurchaseState(response.data)
                 this.setState({ ingredients: response.data });
             })
+            .catch( error => {
+                this.setState({ error: true });
+            });
     }
 
     updatePurchaseState (ingredients) {
@@ -113,7 +118,7 @@ class BurgerBuilder extends Component {
         for(let key in disableInfo) { disableInfo[key] = disableInfo[key] <= 0 }
 
         let orderSummary = null;
-        let burger = <LoadingSpinner />
+        let burger = this.state.error ? <p>Ingredients can't be loaded</p> : <LoadingSpinner />;
 
         if(this.state.ingredients) {
             burger = (
