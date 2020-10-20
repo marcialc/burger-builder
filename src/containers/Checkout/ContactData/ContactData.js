@@ -4,6 +4,7 @@ import Button from '../../../components/UI/Button/Button';
 import classes from './ContactData.css';
 import axios from '../../../axios-order';
 import Spinner from '../../../components/UI/LoadingSpinner/LoadingSpinner';
+import Input from '../../../components/UI/Input/Input';
 
 class ContactData extends Component {
 
@@ -21,16 +22,12 @@ class ContactData extends Component {
         event.preventDefault();
         this.setState({ loading: true });
         const order = {
-            ingredients: this.state.ingredients,
+            ingredients: this.props.ingredients,
             price: this.props.totalPrice,
             customer: {
-                name: 'Marcial Cabrera',
-                address: {
-                    street: 'Tesla Street',
-                    zipcode: '33178',
-                    country: 'USA'
-                },
-                email: 'test@test.com',
+                name: this.state.name,
+                address: this.state.address,
+                email: this.state.email,
             },
             deliveryMethod: 'fastest'
         }
@@ -38,6 +35,7 @@ class ContactData extends Component {
         axios.post('/orders.json', order)
             .then( response => {
                 this.setState({ loading: false })
+                this.props.history.push('/');
             })
             .catch( error => {
                 this.setState({ loading: false  })
@@ -48,13 +46,14 @@ class ContactData extends Component {
 
         let form = (
             <form>
-                <input className={classes.Input} type="text" name="name" placeholder="Your name" />
-                <input className={classes.Input} type="email" name="email" placeholder="Your email" />
-                <input className={classes.Input} type="text" name="street" placeholder="Street" />
-                <input className={classes.Input} type="text" name="postalCode" placeholder="Postal Code" />
+                <Input inputtype="input" placeholder="John Snow" input="text" name="name" label="Your name" />
+                <Input inputtype="input" placeholder="whiteWalker@nothing.snow" input="email" name="email" label="Your email" />
+                <Input inputtype="input" input="text" name="street" label="Street" />
+                <Input inputtype="input" input="text" name="zipcode" label="Zip Code" />
                 <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
             </form>
         );
+
         if(this.state.loading) {
             form = (<Spinner />)
         }
